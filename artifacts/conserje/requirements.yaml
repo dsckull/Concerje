@@ -1,0 +1,17 @@
+packages:
+  "recharts": "Gráficos para o painel da síndica (distribuição emocional e volume)"
+  "date-fns": "Formatação de datas e manipulação de tempo para as tabelas"
+  "framer-motion": "Animações suaves de layout e micro-interações"
+  "lucide-react": "Ícones para o dashboard"
+  "clsx": "Utilitário de classes CSS"
+  "tailwind-merge": "Merge seguro de classes Tailwind"
+
+images:
+  - path: "artifacts/conserje/public/images/conserje-logo.png"
+    description: "Um logotipo minimalista, geométrico, com estilo industrial e de segurança cibernética para um sistema chamado Conserje. Cores principais: cinza escuro e azul néon."
+    aspect_ratio: "1:1"
+
+notes:
+  - O sistema usará os hooks gerados do @workspace/api-client-react
+  - Polling a cada 30 segundos nas listagens principais
+  - O CSS global forçará um tema escuro e industrial

@@ -1,22 +1,29 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Conserje - API de Gestão Condominial
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: moradores
+    description: Gestão de moradores
+  - name: encomendas
+    description: Gestão de encomendas
+  - name: logs
+    description: Logs de interação
+  - name: alertas
+    description: Alertas DefCom
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +31,278 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /moradores:
+    get:
+      operationId: listMoradores
+      tags: [moradores]
+      summary: Listar moradores
+      parameters:
+        - name: apartamento
+          in: query
+          schema:
+            type: string
+        - name: bloco
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de moradores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Morador"
+
+  /moradores/{id}:
+    get:
+      operationId: getMorador
+      tags: [moradores]
+      summary: Buscar morador por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Morador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Morador"
+        "404":
+          description: Morador não encontrado
+
+  /encomendas:
+    get:
+      operationId: listEncomendas
+      tags: [encomendas]
+      summary: Listar encomendas
+      parameters:
+        - name: apartamento
+          in: query
+          schema:
+            type: string
+        - name: status_valido
+          in: query
+          schema:
+            type: string
+        - name: data_inicio
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: data_fim
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: morador_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de encomendas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Encomenda"
+
+  /encomendas/{id}:
+    get:
+      operationId: getEncomenda
+      tags: [encomendas]
+      summary: Buscar encomenda por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Encomenda encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Encomenda"
+        "404":
+          description: Encomenda não encontrada
+    patch:
+      operationId: updateEncomendaStatus
+      tags: [encomendas]
+      summary: Atualizar status da encomenda
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEncomendaStatus"
+      responses:
+        "200":
+          description: Status atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Encomenda"
+        "404":
+          description: Encomenda não encontrada
+
+  /logs:
+    get:
+      operationId: listLogs
+      tags: [logs]
+      summary: Listar logs de interação
+      parameters:
+        - name: morador_id
+          in: query
+          schema:
+            type: integer
+        - name: perfil_emocional
+          in: query
+          schema:
+            type: string
+        - name: data_inicio
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: data_fim
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Lista de logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogInteracao"
+
+  /logs/stats/perfil-emocional:
+    get:
+      operationId: getPerfilEmocionalStats
+      tags: [logs]
+      summary: Estatísticas de perfil emocional
+      responses:
+        "200":
+          description: Distribuição de perfis emocionais
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PerfilEmocionalStat"
+
+  /logs/stats/acoes:
+    get:
+      operationId: getAcoesStats
+      tags: [logs]
+      summary: Estatísticas de ações por dia
+      responses:
+        "200":
+          description: Ações por dia
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AcoesStat"
+
+  /alertas:
+    get:
+      operationId: listAlertas
+      tags: [alertas]
+      summary: Listar alertas DefCom
+      parameters:
+        - name: nivel_risco
+          in: query
+          schema:
+            type: string
+        - name: tipo_ameaca
+          in: query
+          schema:
+            type: string
+        - name: resolvido
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de alertas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AlertaDefCom"
+
+  /alertas/{id}:
+    get:
+      operationId: getAlerta
+      tags: [alertas]
+      summary: Buscar alerta por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Alerta encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertaDefCom"
+        "404":
+          description: Alerta não encontrado
+    patch:
+      operationId: updateAlerta
+      tags: [alertas]
+      summary: Atualizar alerta (arquivar ou acionar)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAlerta"
+      responses:
+        "200":
+          description: Alerta atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertaDefCom"
+        "404":
+          description: Alerta não encontrado
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +313,174 @@ components:
       required:
         - status
 
+    Morador:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        apartamento:
+          type: string
+        bloco:
+          type: string
+        telefone:
+          type: string
+        status:
+          type: string
+          enum: [ativo, inativo]
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - nome
+        - apartamento
+        - bloco
+        - telefone
+        - status
+
+    Encomenda:
+      type: object
+      properties:
+        id:
+          type: integer
+        codigo_rastreio:
+          type: string
+        morador_id:
+          type: integer
+        morador_nome:
+          type: string
+        morador_apartamento:
+          type: string
+        morador_bloco:
+          type: string
+        status_valido:
+          type: string
+          enum: [pendente, notificado, retirado, extraviado]
+        data_recebimento:
+          type: string
+          format: date-time
+        foto_url:
+          type: string
+          nullable: true
+        ocr_confianca:
+          type: number
+          nullable: true
+      required:
+        - id
+        - codigo_rastreio
+        - morador_id
+        - status_valido
+        - data_recebimento
+
+    UpdateEncomendaStatus:
+      type: object
+      properties:
+        status_valido:
+          type: string
+          enum: [pendente, notificado, retirado, extraviado]
+      required:
+        - status_valido
+
+    LogInteracao:
+      type: object
+      properties:
+        id:
+          type: integer
+        morador_id:
+          type: integer
+        morador_nome:
+          type: string
+        morador_apartamento:
+          type: string
+        tipo_msg:
+          type: string
+          enum: [texto, imagem]
+        acao:
+          type: string
+        perfil_emocional:
+          type: string
+          enum: [neutro, colaborativo, estressado, revoltado, mal-intencionado, empolgado, passivo, frustrado, confuso]
+        resultado:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - morador_id
+        - tipo_msg
+        - acao
+        - perfil_emocional
+        - resultado
+
+    PerfilEmocionalStat:
+      type: object
+      properties:
+        perfil_emocional:
+          type: string
+        count:
+          type: integer
+      required:
+        - perfil_emocional
+        - count
+
+    AcoesStat:
+      type: object
+      properties:
+        data:
+          type: string
+        total:
+          type: integer
+        textos:
+          type: integer
+        imagens:
+          type: integer
+      required:
+        - data
+        - total
+        - textos
+        - imagens
+
+    AlertaDefCom:
+      type: object
+      properties:
+        id:
+          type: integer
+        nivel_risco:
+          type: string
+          enum: [baixo, medio, alto, critico]
+        tipo_ameaca:
+          type: string
+          enum: [violencia, criminalidade, emergencia, intimidacao]
+        descricao:
+          type: string
+        resolucao:
+          type: string
+          nullable: true
+        data_alerta:
+          type: string
+          format: date-time
+        arquivado:
+          type: boolean
+        autoridades_acionadas:
+          type: boolean
+      required:
+        - id
+        - nivel_risco
+        - tipo_ameaca
+        - descricao
+        - data_alerta
+        - arquivado
+        - autoridades_acionadas
+
+    UpdateAlerta:
+      type: object
+      properties:
+        arquivado:
+          type: boolean
+        autoridades_acionadas:
+          type: boolean
+        resolucao:
+          type: string
