@@ -5,7 +5,7 @@ import {
   DollarSign, CalendarDays, CalendarCheck, Scale, ShieldAlert,
   Layers, Menu, ChevronRight, Building2
 } from "lucide-react";
-import { useListAlertas } from "@workspace/api-client-react";
+import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 
 const NAV_GROUPS = [
@@ -128,13 +128,20 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { data: alerts } = useListAlertas(
-    { resolvido: false },
-    { query: { refetchInterval: 30000, staleTime: 25000 } }
-  );
-  const criticalCount = alerts?.filter(
+  const { data: alerts } = useQuery<Array<{ arquivado: boolean; nivel_risco: string }>>({
+    queryKey: ["alertas", "active"],
+    queryFn: async () => {
+      const res = await fetch("/api/alertas?resolvido=false");
+      if (!res.ok) throw new Error("Failed to fetch alerts");
+      return res.json();
+    },
+    refetchInterval: 30000,
+    staleTime: 25000,
+  });
+  const criticalCount = Array.isArray(alerts) ? alerts.filter(
     a => !a.arquivado && (a.nivel_risco === "critico" || a.nivel_risco === "alto")
-  ).length || 0;
+  ).length : 0;
+
 
   return (
     <div className="min-h-screen bg-background text-foreground flex overflow-hidden">
