@@ -49,8 +49,12 @@ app.use(express.static(publicDir, {
 }));
 
 // ─── SPA Fallback (All non-API routes serve index.html) ──────────────────
-app.get("*", (req, res) => {
-  res.sendFile(path.join(publicDir, "index.html"));
+app.use((req, res, next) => {
+  if (req.method === "GET" && !req.path.startsWith("/api/")) {
+    res.sendFile(path.join(publicDir, "index.html"));
+  } else {
+    next();
+  }
 });
 
 export default app;

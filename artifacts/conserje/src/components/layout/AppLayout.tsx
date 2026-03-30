@@ -14,6 +14,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/", icon: LayoutDashboard, label: "Dashboard" },
       { href: "/moradores", icon: Users, label: "Moradores" },
+      { href: "/importar", icon: Layers, label: "Importar" },
     ]
   },
   {

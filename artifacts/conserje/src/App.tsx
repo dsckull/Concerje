@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
 import DashboardPage from "@/pages/DashboardPage";
 import MoradoresPage from "@/pages/MoradoresPage";
+import ImportarPage from "@/pages/ImportarPage";
 import EncomendasPage from "@/pages/EncomendasPage";
 import VisitantesPage from "@/pages/VisitantesPage";
 import OcorrenciasPage from "@/pages/OcorrenciasPage";
@@ -34,6 +35,7 @@ function Router() {
         <Switch>
           <Route path="/" component={DashboardPage} />
           <Route path="/moradores" component={MoradoresPage} />
+          <Route path="/importar" component={ImportarPage} />
           <Route path="/encomendas" component={EncomendasPage} />
           <Route path="/visitantes" component={VisitantesPage} />
           <Route path="/ocorrencias" component={OcorrenciasPage} />

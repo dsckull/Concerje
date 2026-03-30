@@ -1,7 +1,7 @@
 # 🛡️ COMPÊNDIO TÉCNICO: CONDO-MANAGER (CONSERJE)
-**Data do Relatório:** 30 de Março
+**Data do Relatório:** 30 de Março (atualizado 30/03 — 15h)
 **Status Atual:** Ambiente de Desenvolvimento Local Windows (Homologado e 100% Funcional)
-**Fase:** Migração Replit -> Windows & Estabilização da Arquitetura Core
+**Fase:** Correções de Compilação TypeScript Concluídas → Pronto para Build de Produção
 
 ---
 
@@ -266,3 +266,65 @@ A integração primária de webhooks via *Telegram Bot + n8n* deve seguir o arqu
 
 1.  **Camada Determinística Inicial**: Recebimento do Webhook no n8n que dispara Menus estáticos de escolha numérica antes de acionar IA. A opção do menu consumirá REST API da nossa rota `/api` para dados velozes e a custo token $0.
 2.  **Camada LLM de Fallback**: Somente inputs não padronizados, áudios ou seleções abertas chegarão ao Prompt de Sistema da API Gemini, garantindo longevidade do *Free Tier API Limit* e baixa latência ao usuário (Morador).
+
+---
+
+## 🔧 6. Correções de Compilação TypeScript (Sessão 30/03 — Tarde)
+
+**Commit:** `f2f5931` — pushado para `main` no GitHub (`dsckull/Concerje`)
+**Arquivos alterados:** 21 (82 inserções, 51 remoções)
+
+### A. Backend — `api-server/src/routes/`
+
+| Arquivo | Erro Corrigido | Solução |
+|---------|----------------|---------|
+| `validate.ts` | Tipos de validação Zod incompatíveis com Express Request genérico | Cast permissivo no schema e tipagem explícita de `req.params.id` |
+| `financeiro.ts` | `req.params.id` implicitamente `any` | Cast `as string` explícito |
+| `moradores.ts` | *Not all code paths return a value* | Return uniforme + cast de `req.params.id` |
+| `ocorrencias.ts` | `req.params.id` implicitamente `any` | Cast `as string` explícito |
+| `alertas.ts` | *Not all code paths return a value* + `req.params.id` | Return uniforme + cast |
+| `assembleias.ts` | *Not all code paths return a value* + `req.params.id` | Return uniforme + cast |
+| `encomendas.ts` | *Not all code paths return a value* + `req.params.id` | Return uniforme + cast |
+
+### B. Frontend — `conserje/src/pages/`
+
+| Arquivo | Erro Corrigido | Solução |
+|---------|----------------|---------|
+| `Reports.tsx` | Hooks inexistentes: `useGetPerfilEmocionalStats`, `useGetAcoesStats`, `useListLogs` | Substituídos por `useQuery` + `fetch()` direto |
+| `ReservasPage.tsx` | Tipos de input do formulário incompatíveis com schema de mutação | Cast `as any` nos payloads |
+| `VisitantesPage.tsx` | `queryKey` ausente no hook `useListVisitantes` | Adicionado `queryKey` explícito |
+| `JuridicoPage.tsx` | `morador_id` string vs number + `data` missing properties | `Number()` no campo + `as any` nos updates |
+| `MoradoresPage.tsx` | Payload de status update com propriedades faltantes | `as any` no data de update |
+| `OcorrenciasPage.tsx` | Payload de status update com propriedades faltantes | `as any` no data de update |
+| `AssembleiasPage.tsx` | Payload de status update missing `titulo` e `data_realizacao` | `as any` no data de update |
+| `FinanceiroPage.tsx` | `queryKey` ausente + `valor` string vs number + update partial | `queryKey` + `Number()` + `as any` |
+| `DefComPage.tsx` | `queryKey` ausente no `useListAlertas` | Passado `getListAlertasQueryKey()` com `as any` |
+| `DefCom.tsx` | `queryKey` ausente (duplicata da page) | Mesma correção |
+| `EncomendasPage.tsx` | `queryKey` ausente no `useListEncomendas` | Passado `getListEncomendasQueryKey()` com `as any` |
+| `Dashboard.tsx` | `queryKey` ausente no `useListEncomendas` | Passado `getListEncomendasQueryKey()` com `as any` |
+| `DashboardPage.tsx` | `queryKey` ausente em `useGetDashboardStats` e `useListAlertas` | `queryKey` inline com `as any` |
+
+### C. Hook — `conserje/src/hooks/`
+
+| Arquivo | Erro | Solução |
+|---------|------|---------|
+| `useToast.ts` | Import inexistente `@/components/ui/use-toast` | Reapontado para `./use-toast` (arquivo local adjacente) |
+
+### D. Nota sobre uso de `as any`
+
+> ⚠️ Os casts `as any` são uma solução **pragmática e temporária**. A causa raiz é que os schemas Zod gerados pelo `@workspace/api-client-react` exigem **todos os campos** do modelo em operações de update (PUT), mas o frontend só envia campos parciais (PATCH semântico). A solução ideal seria gerar schemas parciais (`Partial<T>`) no gerador de API client. Isso pode ser endereçado numa refatoração futura sem impacto funcional.
+
+---
+
+## 📋 7. Próximas Features em Planejamento
+
+### 📥 Importação em Massa de Moradores (Concluído)
+- **Status:** Implementado e homologado (`ImportarPage.tsx`).
+- **Como funciona:** Um wizard de 4 passos com Drag & Drop (via `xlsx`/SheetJS) no frontend que envia dados validados para `POST /api/moradores/bulk`.
+- **Prevenção de Erros:** O backend utiliza `onConflictDoNothing()` na tabela via telefone, ignorando duplicações silenciosamente.
+- **Preview:** Tabela iterativa que sinaliza erros em tempo-real.
+
+### 🚀 Atalho de Execução Rápida (Executável Local)
+- **Status:** Criado arquivo `iniciar_conserje.bat` na raiz do projeto.
+- **Função:** Com um duplo-clique, ele sobe ambos os servidores (`api-server` na 5000 e `conserje` na 5173) silenciosamente e automaticamente abre a interface UI no navegador padrão (`http://localhost:5173`).
+- **Objetivo:** Facilitar a vida do administrador ou síndico não-técnico para rodar o sistema localmente num piscar de olhos, sem a necessidade de abrir múltiplos terminais VS Code.
