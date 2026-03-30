@@ -18,9 +18,12 @@ router.get("/assembleias", async (req, res) => {
 
 router.get("/assembleias/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [assembleia] = await db.select().from(assembleiasTable).where(eq(assembleiasTable.id, id));
-    if (!assembleia) return res.status(404).json({ error: "Not found" });
+    if (!assembleia) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
     const votacoes = await db.select().from(votacoesTable).where(eq(votacoesTable.assembleia_id, id));
     res.json({ ...assembleia, votacoes });
   } catch (err) {
@@ -39,7 +42,7 @@ router.post("/assembleias", async (req, res) => {
 
 router.patch("/assembleias/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [row] = await db.update(assembleiasTable).set({ ...req.body, updated_at: new Date() }).where(eq(assembleiasTable.id, id)).returning();
     res.json(row);
   } catch (err) {

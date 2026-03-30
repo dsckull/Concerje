@@ -28,9 +28,12 @@ router.get("/alertas", async (req, res) => {
 
 router.get("/alertas/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [alerta] = await db.select().from(alertasDefcomTable).where(eq(alertasDefcomTable.id, id));
-    if (!alerta) return res.status(404).json({ error: "Alerta não encontrado" });
+    if (!alerta) {
+      res.status(404).json({ error: "Alerta não encontrado" });
+      return;
+    }
     res.json(alerta);
   } catch (err) {
     req.log.error(err);
@@ -40,7 +43,7 @@ router.get("/alertas/:id", async (req, res) => {
 
 router.patch("/alertas/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const { arquivado, autoridades_acionadas, resolucao } = req.body as {
       arquivado?: boolean;
       autoridades_acionadas?: boolean;
@@ -58,7 +61,10 @@ router.patch("/alertas/:id", async (req, res) => {
       .where(eq(alertasDefcomTable.id, id))
       .returning();
 
-    if (!updated) return res.status(404).json({ error: "Alerta não encontrado" });
+    if (!updated) {
+      res.status(404).json({ error: "Alerta não encontrado" });
+      return;
+    }
     res.json(updated);
   } catch (err) {
     req.log.error(err);

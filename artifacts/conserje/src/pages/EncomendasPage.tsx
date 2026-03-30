@@ -19,7 +19,7 @@ export default function EncomendasPage() {
 
   const { data: encomendas, isLoading, isFetching } = useListEncomendas(
     { apartamento: aptoFilter || undefined, status_valido: statusFilter || undefined },
-    { query: { refetchInterval: 30000 } }
+    { query: { refetchInterval: 30000, queryKey: getListEncomendasQueryKey() } as any }
   );
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateEncomendaStatus({ mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListEncomendasQueryKey() }) } });
 

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useToast as useUIToast } from "@/components/ui/use-toast";
+import { useToast as useUIToast } from "./use-toast";
 
 export function useToast() {
   const { toast } = useUIToast();

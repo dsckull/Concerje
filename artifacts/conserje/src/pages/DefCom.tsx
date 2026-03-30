@@ -12,7 +12,7 @@ export default function DefCom() {
   // Poll every 15 seconds for security alerts
   const { data: alertas, isLoading } = useListAlertas(
     { resolvido: filterActiveOnly ? false : undefined },
-    { query: { refetchInterval: 15000 } }
+    { query: { refetchInterval: 15000, queryKey: getListAlertasQueryKey() } as any }
   );
 
   const { mutate: updateAlerta, isPending: isUpdating } = useUpdateAlerta({

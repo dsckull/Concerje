@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodSchema, ZodError } from "zod";
+import { ZodSchema, ZodError, z } from "zod";
 
-export function validate(schema: ZodSchema) {
+export function validate(schema: z.ZodTypeAny | any) {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
@@ -24,7 +24,7 @@ export function validate(schema: ZodSchema) {
 }
 
 export function validateId(req: Request, res: Response, next: NextFunction) {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id as string);
   if (isNaN(id) || id <= 0) {
     res.status(400).json({ error: "ID inválido" });
     return;

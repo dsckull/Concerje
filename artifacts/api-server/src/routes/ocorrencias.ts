@@ -40,7 +40,7 @@ router.post("/ocorrencias", validate(insertOcorrenciaSchema), async (req, res) =
 
 router.patch("/ocorrencias/:id", validateId, validate(updateOcorrenciaSchema), async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [row] = await db
       .update(ocorrenciasTable)
       .set({ ...req.body, updated_at: new Date() })

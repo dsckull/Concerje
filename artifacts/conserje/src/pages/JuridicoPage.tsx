@@ -88,7 +88,7 @@ export default function JuridicoPage() {
                 <textarea placeholder="Descrição*" value={form.descricao} onChange={e => setForm(f => ({...f, descricao: e.target.value}))} rows={3} className="col-span-2 bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
               </div>
               <div className="flex gap-3">
-                <button onClick={() => create({ data: form })} disabled={isCreating || !form.morador_id || !form.titulo || !form.descricao} className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
+                <button onClick={() => create({ data: { ...form, morador_id: Number(form.morador_id) } as any })} disabled={isCreating || !form.morador_id || !form.titulo || !form.descricao} className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
                   {isCreating ? "Salvando..." : "Enviar"}
                 </button>
                 <button onClick={() => setShowForm(false)} className="bg-secondary text-muted-foreground hover:text-white text-sm px-4 py-2 rounded-lg">Cancelar</button>
@@ -130,7 +130,7 @@ export default function JuridicoPage() {
                     {n.data_prazo && <span>⏰ Prazo: {new Date(n.data_prazo).toLocaleDateString("pt-BR")}</span>}
                   </div>
                   <div className="flex gap-2">
-                    <select value={n.status} onChange={e => update({ id: n.id, data: { status: e.target.value } })} className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
+                    <select value={n.status} onChange={e => update({ id: n.id, data: { status: e.target.value } as any })} className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
                       <option value="enviada">Enviada</option>
                       <option value="contestada">Contestada</option>
                       <option value="resolvida">Resolvida</option>

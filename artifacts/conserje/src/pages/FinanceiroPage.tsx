@@ -24,7 +24,7 @@ export default function FinanceiroPage() {
   const [form, setForm] = useState({ tipo: "despesa", descricao: "", valor: "", categoria: "outros", status: "pendente", data_vencimento: "" });
   const qc = useQueryClient();
 
-  const { data: resumo } = useGetResumoFinanceiro({ query: { refetchInterval: 60000 } });
+  const { data: resumo } = useGetResumoFinanceiro({ query: { refetchInterval: 60000, queryKey: ["resumoP"] } as any });
   const { data: movimentacoes, isLoading } = useListFinanceiro({ tipo: tipo || undefined, status: status || undefined });
   const { mutate: create, isPending: isCreating } = useCreateFinanceiro({ mutation: { onSuccess: () => { qc.invalidateQueries({ queryKey: getListFinanceiroQueryKey() }); setShowForm(false); setForm({ tipo: "despesa", descricao: "", valor: "", categoria: "outros", status: "pendente", data_vencimento: "" }); } } });
   const { mutate: update } = useUpdateFinanceiro({ mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListFinanceiroQueryKey() }) } });
@@ -81,7 +81,7 @@ export default function FinanceiroPage() {
             </select>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => create({ data: form })} disabled={isCreating || !form.descricao || !form.valor} className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
+            <button onClick={() => create({ data: { ...form, valor: Number(form.valor) } as any })} disabled={isCreating || !form.descricao || !form.valor} className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
               {isCreating ? "Salvando..." : "Lançar"}
             </button>
             <button onClick={() => setShowForm(false)} className="bg-secondary text-muted-foreground hover:text-white text-sm px-4 py-2 rounded-lg">Cancelar</button>
@@ -132,7 +132,7 @@ export default function FinanceiroPage() {
                   <td className="px-5 py-3 text-muted-foreground text-xs">{m.data_vencimento ? new Date(m.data_vencimento).toLocaleDateString("pt-BR") : "—"}</td>
                   <td className="px-5 py-3"><span className={cn("px-2.5 py-1 rounded-full border text-xs font-semibold", statusConf.class)}>{statusConf.label}</span></td>
                   <td className="px-5 py-3 text-right">
-                    <select value={m.status} onChange={e => update({ id: m.id, data: { status: e.target.value } })} className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
+                    <select value={m.status} onChange={e => update({ id: m.id, data: { status: e.target.value } as any })} className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
                       <option value="pendente">Pendente</option>
                       <option value="pago">Pago</option>
                       <option value="vencido">Vencido</option>

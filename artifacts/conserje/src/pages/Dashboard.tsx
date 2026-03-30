@@ -19,8 +19,9 @@ export default function Dashboard() {
     { 
       query: { 
         refetchInterval: 30000,
-        staleTime: 10000 
-      } 
+        staleTime: 10000,
+        queryKey: getListEncomendasQueryKey()
+      } as any
     }
   );
 

@@ -20,7 +20,7 @@ export default function VisitantesPage() {
 
   const { data: visitantes, isLoading, isFetching } = useListVisitantes(
     { dentro: filtro === "dentro" ? true : undefined },
-    { query: { refetchInterval: 15000 } }
+    { query: { refetchInterval: 15000, queryKey: getListVisitantesQueryKey() } as any }
   );
   const { mutate: createVisitante, isPending: isCreating } = useCreateVisitante({ mutation: { onSuccess: () => { qc.invalidateQueries({ queryKey: getListVisitantesQueryKey() }); setShowForm(false); setForm({ nome: "", documento: "", telefone: "", destino_apartamento: "", destino_bloco: "", motivo: "visita", tipo: "visitante" }); } } });
   const { mutate: registrarSaida, isPending: isSaindo } = useRegistrarSaida({ mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListVisitantesQueryKey() }) } });

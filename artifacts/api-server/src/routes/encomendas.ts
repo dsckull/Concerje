@@ -44,7 +44,7 @@ router.get("/encomendas", async (req, res) => {
 
 router.get("/encomendas/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [row] = await db
       .select({
         id: encomendasTable.id,
@@ -62,7 +62,10 @@ router.get("/encomendas/:id", async (req, res) => {
       .leftJoin(moradoresTable, eq(encomendasTable.morador_id, moradoresTable.id))
       .where(eq(encomendasTable.id, id));
 
-    if (!row) return res.status(404).json({ error: "Encomenda não encontrada" });
+    if (!row) {
+      res.status(404).json({ error: "Encomenda não encontrada" });
+      return;
+    }
     res.json(row);
   } catch (err) {
     req.log.error(err);
@@ -72,10 +75,13 @@ router.get("/encomendas/:id", async (req, res) => {
 
 router.patch("/encomendas/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const { status_valido } = req.body as { status_valido: string };
 
-    if (!status_valido) return res.status(400).json({ error: "status_valido é obrigatório" });
+    if (!status_valido) {
+      res.status(400).json({ error: "status_valido é obrigatório" });
+      return;
+    }
 
     const [updated] = await db
       .update(encomendasTable)
@@ -83,7 +89,10 @@ router.patch("/encomendas/:id", async (req, res) => {
       .where(eq(encomendasTable.id, id))
       .returning();
 
-    if (!updated) return res.status(404).json({ error: "Encomenda não encontrada" });
+    if (!updated) {
+      res.status(404).json({ error: "Encomenda não encontrada" });
+      return;
+    }
 
     const [row] = await db
       .select({

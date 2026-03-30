@@ -92,7 +92,7 @@ export default function AssembleiasPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   {a.link_reuniao && <a href={a.link_reuniao} target="_blank" rel="noopener noreferrer" className="text-xs bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded font-semibold transition-colors">Acessar Reunião</a>}
-                  <select value={a.status} onChange={e => update({ id: a.id, data: { status: e.target.value } })} className="bg-background border border-border text-xs rounded px-3 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
+                  <select value={a.status} onChange={e => update({ id: a.id, data: { status: e.target.value } as any })} className="bg-background border border-border text-xs rounded px-3 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
                     <option value="agendada">Agendada</option>
                     <option value="em_andamento">Em Andamento</option>
                     <option value="concluida">Concluída</option>

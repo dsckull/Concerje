@@ -29,9 +29,12 @@ router.get("/moradores", async (req, res) => {
 
 router.get("/moradores/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [morador] = await db.select().from(moradoresTable).where(eq(moradoresTable.id, id));
-    if (!morador) return res.status(404).json({ error: "Morador não encontrado" });
+    if (!morador) {
+      res.status(404).json({ error: "Morador não encontrado" });
+      return;
+    }
     res.json(morador);
   } catch (err) {
     req.log.error(err);

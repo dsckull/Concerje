@@ -117,7 +117,7 @@ export default function MoradoresPage() {
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right">
-                    <select value={m.status} onChange={e => updateMorador({ id: m.id, data: { status: e.target.value } })}
+                    <select value={m.status} onChange={e => updateMorador({ id: m.id, data: { status: e.target.value } as any })}
                       className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
                       <option value="ativo">Ativo</option>
                       <option value="inativo">Inativo</option>

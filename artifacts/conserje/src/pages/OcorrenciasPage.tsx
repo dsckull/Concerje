@@ -107,7 +107,7 @@ export default function OcorrenciasPage() {
                 <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold", statusConf.class)}>
                   <StatusIcon className="w-3 h-3" />{statusConf.label}
                 </span>
-                <select value={o.status} onChange={e => update({ id: o.id, data: { status: e.target.value } })}
+                <select value={o.status} onChange={e => update({ id: o.id, data: { status: e.target.value } as any })}
                   className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
                   <option value="aberta">Aberta</option>
                   <option value="em_andamento">Em Andamento</option>

@@ -18,7 +18,7 @@ export default function DefComPage() {
 
   const { data: alertas, isLoading, isFetching } = useListAlertas(
     { resolvido: filterAtivos ? false : undefined },
-    { query: { refetchInterval: 15000 } }
+    { query: { refetchInterval: 15000, queryKey: getListAlertasQueryKey() } as any }
   );
   const { mutate: updateAlerta, isPending: isUpdating } = useUpdateAlerta({ mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListAlertasQueryKey() }) } });
 

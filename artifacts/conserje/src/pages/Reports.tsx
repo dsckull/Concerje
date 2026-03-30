@@ -1,4 +1,4 @@
-import { useGetPerfilEmocionalStats, useGetAcoesStats, useListLogs } from "@workspace/api-client-react";
+import { useQuery } from "@tanstack/react-query";
 import { BarChart3, Activity, Users, MessageSquareWarning } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import { formatDateTime } from "@/lib/utils";
@@ -16,17 +16,26 @@ const EMOTION_COLORS: Record<string, string> = {
 };
 
 export default function Reports() {
-  const { data: emotionalStats } = useGetPerfilEmocionalStats({ query: { refetchInterval: 60000 } });
-  const { data: actionsStats } = useGetAcoesStats({ query: { refetchInterval: 60000 } });
-  const { data: recentLogs } = useListLogs(
-    { }, // fetch all recent
-    { query: { refetchInterval: 60000 } }
-  );
+  const { data: emotionalStats } = useQuery<any[]>({
+    queryKey: ["perfil_emocional_stats"],
+    queryFn: () => fetch("/api/logs/stats/emocoes").then(res => res.json()).catch(() => []),
+    refetchInterval: 60000,
+  });
+  const { data: actionsStats } = useQuery<any[]>({
+    queryKey: ["acoes_stats"],
+    queryFn: () => fetch("/api/logs/stats/acoes").then(res => res.json()).catch(() => []),
+    refetchInterval: 60000,
+  });
+  const { data: recentLogs } = useQuery<any[]>({
+    queryKey: ["logs"],
+    queryFn: () => fetch("/api/logs").then(res => res.json()).catch(() => []),
+    refetchInterval: 60000,
+  });
 
   // Calculate KPIs
-  const totalLogs = emotionalStats?.reduce((acc, curr) => acc + curr.count, 0) || 0;
-  const negativeEmotions = emotionalStats?.filter(s => ['estressado', 'revoltado', 'mal-intencionado'].includes(s.perfil_emocional)).reduce((acc, curr) => acc + curr.count, 0) || 0;
-  const positiveEmotions = emotionalStats?.filter(s => ['colaborativo', 'empolgado'].includes(s.perfil_emocional)).reduce((acc, curr) => acc + curr.count, 0) || 0;
+  const totalLogs = emotionalStats?.reduce((acc: number, curr: any) => acc + curr.count, 0) || 0;
+  const negativeEmotions = emotionalStats?.filter((s: any) => ['estressado', 'revoltado', 'mal-intencionado'].includes(s.perfil_emocional)).reduce((acc: number, curr: any) => acc + curr.count, 0) || 0;
+  const positiveEmotions = emotionalStats?.filter((s: any) => ['colaborativo', 'empolgado'].includes(s.perfil_emocional)).reduce((acc: number, curr: any) => acc + curr.count, 0) || 0;
   
   const negativePercent = totalLogs > 0 ? Math.round((negativeEmotions / totalLogs) * 100) : 0;
   const positivePercent = totalLogs > 0 ? Math.round((positiveEmotions / totalLogs) * 100) : 0;
@@ -34,7 +43,7 @@ export default function Reports() {
   const daysWithData = actionsStats?.length || 1;
   const avgDaily = Math.round(totalLogs / daysWithData);
 
-  const pieData = emotionalStats?.map(s => ({
+  const pieData = emotionalStats?.map((s: any) => ({
     name: s.perfil_emocional.charAt(0).toUpperCase() + s.perfil_emocional.slice(1),
     value: s.count,
     fill: EMOTION_COLORS[s.perfil_emocional] || '#888888'
@@ -102,7 +111,7 @@ export default function Reports() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {pieData.map((entry, index) => (
+                  {pieData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} stroke="rgba(0,0,0,0.5)" strokeWidth={2} />
                   ))}
                 </Pie>
@@ -153,7 +162,7 @@ export default function Reports() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {recentLogs?.slice(0, 10).map((log) => (
+              {recentLogs?.slice(0, 10).map((log: any) => (
                 <tr key={log.id} className="hover:bg-secondary/30 transition-colors">
                   <td className="px-6 py-3 text-muted-foreground">{formatDateTime(log.created_at || '')}</td>
                   <td className="px-6 py-3 font-medium text-white">{log.morador_nome || `Apto ${log.morador_apartamento}`}</td>

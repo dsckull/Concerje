@@ -55,7 +55,7 @@ router.post("/financeiro", validate(insertFinanceiroSchema), async (req, res) =>
 
 router.patch("/financeiro/:id", validateId, validate(updateFinanceiroSchema), async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [row] = await db
       .update(financeiroTable)
       .set({ ...req.body, updated_at: new Date() })

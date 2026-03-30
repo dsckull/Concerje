@@ -49,7 +49,7 @@ export default function ReservasPage() {
             <input placeholder="Motivo (ex: Festa, Treino)" value={form.motivo} onChange={e => setForm(f => ({...f, motivo: e.target.value}))} className="col-span-2 bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
           </div>
           <div className="flex gap-3">
-            <button onClick={() => create({ data: form })} disabled={isCreating || !form.area_id || !form.morador_id || !form.data_inicio || !form.data_fim} className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
+            <button onClick={() => create({ data: { ...form, area_id: Number(form.area_id), morador_id: Number(form.morador_id) } as any })} disabled={isCreating || !form.area_id || !form.morador_id || !form.data_inicio || !form.data_fim} className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50">
               {isCreating ? "Agendando..." : "Confirmar Reserva"}
             </button>
             <button onClick={() => setShowForm(false)} className="bg-secondary text-muted-foreground hover:text-white text-sm px-4 py-2 rounded-lg">Cancelar</button>
@@ -97,7 +97,7 @@ export default function ReservasPage() {
                   <td className="px-5 py-3 text-muted-foreground text-xs">{r.motivo || "—"}</td>
                   <td className="px-5 py-3"><span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs font-semibold", statusConf.class)}><StatusIcon className="w-3 h-3" />{statusConf.label}</span></td>
                   <td className="px-5 py-3 text-right">
-                    <select value={r.status} onChange={e => update({ id: r.id, data: { status: e.target.value } })} className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
+                    <select value={r.status} onChange={e => update({ id: r.id, data: { status: e.target.value } as any })} className="bg-background border border-border text-xs rounded px-2 py-1.5 focus:outline-none focus:border-primary cursor-pointer">
                       <option value="confirmada">Confirmada</option>
                       <option value="pendente">Pendente</option>
                       <option value="cancelada">Cancelada</option>

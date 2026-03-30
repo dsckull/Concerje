@@ -7,8 +7,8 @@ import {
 import { cn, formatDateTime, formatCurrency } from "@/lib/utils";
 
 export default function DashboardPage() {
-  const { data: stats, isLoading } = useGetDashboardStats({ query: { refetchInterval: 30000 } });
-  const { data: alerts } = useListAlertas({ resolvido: false }, { query: { refetchInterval: 30000 } });
+  const { data: stats, isLoading } = useGetDashboardStats({ query: { refetchInterval: 30000, queryKey: ['dashStats'] } as any });
+  const { data: alerts } = useListAlertas({ resolvido: false }, { query: { refetchInterval: 30000, queryKey: ['dashAlerts'] } as any });
 
   const criticalAlerts = alerts?.filter(a => !a.arquivado && (a.nivel_risco === "critico" || a.nivel_risco === "alto")) || [];
 
